@@ -1,0 +1,10 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="Certificates:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/Certificates_jar</output-path>
+    <root id="archive" name="Certificates.jar">
+      <element id="module-output" name="Certificates" />
+      <element id="extracted-dir" path="$USER_HOME$/Downloads/pdfbox-app-2.0.19.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/Downloads/jbig2-imageio-3.0.3.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>
