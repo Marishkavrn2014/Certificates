@@ -20,6 +20,10 @@ course name, number of school hours and year of study period.
 The program works with English. The certificate itself is attached by the
 user to the directory structure of the program and should be called Cert.jpg.
  */
+package main.java.ms.certificates.view;
+import main.java.ms.certificates.creator.CertificateCreator;
+import main.java.ms.certificates.data.FieldData;
+
 import javax.swing.*;
 import java.awt.event.*;
 import java.io.*;
@@ -38,86 +42,92 @@ public class Certificates extends JFrame {
     private JTextField textField5;
     private JTextField textField6;
     private JComboBox comboBox4;
-    String firstName;
-    String lastName;
-    String level;
-    String courseName;
-    String hours;
-    String from;
-    String to;
+    private String firstName;
+    private String lastName;
+    private String level;
+    private String courseName;
+    private String hours;
+    private String from;
+    private String to;
 
 
-    public Certificates(){
+    public Certificates() {
         setContentPane(rootPanel);
         setVisible(true);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        setSize(550,390);
+        setSize(550, 390);
         //when you click the create button, it starts checking the input and then creates a document
         ookButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 //create InputStream for synchronising id of certificate
-                ObjectInputStream in;
-                CertificateCreator cc = new CertificateCreator();
-                try {
-                    in = new ObjectInputStream(new FileInputStream(System.getProperty("user.dir")+"/log/Creator.out"));
-                    cc = (CertificateCreator) in.readObject();
-                    in.close();
+                CertificateCreator certificateCreator = new CertificateCreator();
+                final String sDirSeparator = System.getProperty("file.separator");
+                try (final ObjectInputStream in = new ObjectInputStream(
+                        new FileInputStream(System.getProperty("user.dir") + sDirSeparator + "log" + sDirSeparator + "Creator.out"))) {
+                    certificateCreator = (CertificateCreator) in.readObject();
                 } catch (IOException | ClassNotFoundException ioException) {
                     ioException.printStackTrace();
                 }
                 //initializing fields
                 firstName = textField1.getText();
-                lastName  = textField3.getText();
+                lastName = textField3.getText();
                 hours = textField2.getText();
                 from = comboBox2.getSelectedItem().toString();
                 to = comboBox3.getSelectedItem().toString();
                 //if the user needs to write another name
-                if(comboBox4.getSelectedItem().toString().equals("Manual input")){
+                if ("Manual input".equals(comboBox4.getSelectedItem().toString())) {
                     courseName = textField6.getText();
                 } else {
                     courseName = comboBox4.getSelectedItem().toString();
                 }
-                if(comboBox1.getSelectedItem().toString().equals("Manual input")){
+                if ("Manual input".equals(comboBox1.getSelectedItem().toString())) {
                     level = textField5.getText();
                 } else {
                     level = comboBox1.getSelectedItem().toString();
                 }
                 //if input is ok, starts to create a document and write a copy in Output stream
-                if(checkText(firstName) && checkText(lastName) && checkText(lastName) && checkNull(courseName) && checkNumbers(hours) && checkNull(level)){
-                    String[] s1 = {firstName, lastName, level, hours, from, to, courseName};
-                    try {
-                        if(cc.createDoc(s1)) {
-                            ObjectOutputStream o = new ObjectOutputStream(new FileOutputStream(System.getProperty("user.dir")+"/log/Creator.out"));
+                if (checkText(firstName) && checkText(lastName) && checkEmpty(hours) && checkEmpty(courseName) && checkNumbers(hours) && checkEmpty(level)) {
+
+                    // set fields to FieldData
+                    FieldData fieldData = new FieldData();
+                    fieldData.setCourseName(courseName);
+                    fieldData.setFirstName(firstName);
+                    fieldData.setLastName(lastName);
+                    fieldData.setFrom(from);
+                    fieldData.setTo(to);
+                    fieldData.setHours(hours);
+                    fieldData.setLevel(level);
+
+                    // create a document, check that the method return true
+                    if (certificateCreator.createDoc(fieldData)) {
+                        try (final ObjectOutputStream o = new ObjectOutputStream(
+                                new FileOutputStream(System.getProperty("user.dir") + sDirSeparator + "log" + sDirSeparator + "Creator.out"))) {
+
+                            //show confirmation window
                             SuccessfulWindow sw = new SuccessfulWindow();
-                            o.writeObject(cc);
+                            message.setText("Certificate has been saved!");
+
+                            //synchronizing object version
+                            o.writeObject(certificateCreator);
                             o.flush();
                             o.close();
-                        }
-                        } catch (IOException fileNotFoundException) {
-                        fileNotFoundException.printStackTrace();
-                        }
 
+                        } catch (IOException fileNotFoundException) {
+                            fileNotFoundException.printStackTrace();
+                        }
+                    }
                 }
             }
         });
     }
 
-    public static void main(String[] args) {
-       SwingUtilities.invokeLater(
-               new Runnable() {
-                   @Override
-                   public void run() {
-                       new Certificates();
-                   }
-               }
-       );
-    }
+
     //checking that the name is correct and not empty
-    boolean checkText(String text){
-        if(!text.equals("")) {
+    boolean checkText(String text) {
+        if (!text.isEmpty()) {
             for (char c : text.toCharArray()) {
-                if (c >= 'A' && c <= 'Z' || c >= 'a' && c <= 'z' || c == 45) {
+                if (Character.toString(c).matches("[a-zA-Z\\-]")) {
                     continue;
                 } else {
                     message.setText("The name must contain only characters!");
@@ -130,10 +140,11 @@ public class Certificates extends JFrame {
         }
         return true;
     }
+
     //checking that the "hours" field contain only digits
     boolean checkNumbers(String text) {
         for (char c : text.toCharArray()) {
-            if(c >= 48 && c <= 57){
+            if (Character.toString(c).matches("[0-9]")) {
                 continue;
             } else {
                 message.setText("Hours must contain only digits!");
@@ -142,10 +153,11 @@ public class Certificates extends JFrame {
         }
         return true;
     }
+
     //checking that the "Course name" field is not empty
-    boolean checkNull(String text) {
-        if(text.equals("")){
-            message.setText("Please check the name of the course and level!");
+    boolean checkEmpty(String text) {
+        if (text.isEmpty()) {
+            message.setText("Please check the name of the course, hours and level!");
             return false;
         }
         return true;

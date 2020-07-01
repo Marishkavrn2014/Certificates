@@ -1,5 +1,6 @@
-//this window requires the user to verify that the certificate is created
+package main.java.ms.certificates.view;//this window requires the user to verify that the certificate is created
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.*;
 
 public class SuccessfulWindow extends JDialog {
@@ -21,14 +22,4 @@ public class SuccessfulWindow extends JDialog {
         });
     }
 
-    public static void main(String[] args) {
-            SwingUtilities.invokeLater(
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            new SuccessfulWindow();
-                        }
-                    }
-            );
-    }
 }
