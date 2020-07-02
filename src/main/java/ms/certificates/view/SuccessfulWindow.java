@@ -1,7 +1,8 @@
-package main.java.ms.certificates.view;//this window requires the user to verify that the certificate is created
+package ms.certificates.view;//this window requires the user to verify that the certificate is created
+
 import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class SuccessfulWindow extends JDialog {
     private JPanel contentPane;

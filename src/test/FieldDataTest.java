@@ -1,6 +1,6 @@
 package test;
 
-import main.java.ms.certificates.data.FieldData;
+import ms.certificates.data.FieldData;
 import org.junit.Assert;
 import org.junit.Test;
 

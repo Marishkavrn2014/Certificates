@@ -1,12 +1,11 @@
 package test;
 
-import main.java.ms.certificates.creator.CertificateCreator;
-import main.java.ms.certificates.data.FieldData;
+import ms.certificates.creator.CertificateCreator;
+import ms.certificates.data.FieldData;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import java.io.*;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -22,8 +21,9 @@ public class CertificateCreatorTest {
     static String hours = "100";
     static String from = "2020";
     static String to = "2021";
+
     @BeforeClass
-    public static void creator(){
+    public static void creator() {
 
         fieldData.setTo(to);
         fieldData.setLevel(level);
@@ -80,4 +80,4 @@ public class CertificateCreatorTest {
         }
         Assert.assertTrue(resultFileName && resultRow);
     }
-    }
+}

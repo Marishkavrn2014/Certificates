@@ -1,4 +1,4 @@
-package main.java.ms.certificates.data;
+package ms.certificates.data;
 
 public class FieldData {
     private String firstName, lastName, level, hours, from, to, courseName;

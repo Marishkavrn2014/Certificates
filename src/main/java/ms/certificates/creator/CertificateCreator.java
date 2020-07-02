@@ -1,34 +1,41 @@
 //This class creating a document in PDF
-package main.java.ms.certificates.creator;
-import main.java.ms.certificates.data.FieldData;
-import org.apache.pdfbox.pdmodel.*;
+package ms.certificates.creator;
+
+import ms.certificates.data.FieldData;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
+
 import java.io.*;
 import java.util.Date;
 
-public class CertificateCreator implements Serializable{
+public class CertificateCreator implements Serializable {
     //it is synchronized so that when the program is opened and each document is generated, the document numbering continues from the previous one
     public int id;
     private final static String prefix = "10";
+
     //generating a number consisting of a prefix and id
-    public String generateNumber(){
+    public String generateNumber() {
         StringBuilder sb = new StringBuilder();
         sb.append(prefix);
-        for(int i = 1; i < 7 - String.valueOf(id).length(); i++){
+        for (int i = 1; i < 7 - String.valueOf(id).length(); i++) {
             sb.append("0");
         }
         sb.append(id);
         return sb.toString();
     }
+
     //this method puts the image in a pdf page
     public static void addImageToPage(PDDocument documentOut, float x, float y, String imagePath, PDPageContentStream contentStream)
             throws IOException {
         PDImageXObject xImage = PDImageXObject.createFromFile(imagePath, documentOut);
         contentStream.drawImage(xImage, x, y, 800, 600);
     }
+
     //create a journal document, print the text on the page, write the history of the creation of main.certificates
     public boolean createDoc(FieldData fields) {
         //if ok, return true
@@ -56,7 +63,7 @@ public class CertificateCreator implements Serializable{
         //open a document, set fonts, sizes, add an image and all PDF pages
         try {
             // write error log in /log/log.txt
-            System.setErr(new PrintStream(new File(System.getProperty("user.dir") + sDirSeparator + "log" + sDirSeparator +"log.txt")));
+            System.setErr(new PrintStream(new File(System.getProperty("user.dir") + sDirSeparator + "log" + sDirSeparator + "log.txt")));
 
             //create new PDF document
             PDDocument document = new PDDocument();
@@ -99,11 +106,11 @@ public class CertificateCreator implements Serializable{
 
             //add part of certificate
             PDDocument appendix1 = PDDocument.load(new File(System.getProperty("user.dir") + sDirSeparator + "RQCR.pdf"));
-            for(int i = 0; i < appendix1.getNumberOfPages(); i++){
+            for (int i = 0; i < appendix1.getNumberOfPages(); i++) {
                 document.addPage(appendix1.getPage(i));
             }
             PDDocument appendix2 = PDDocument.load(new File(System.getProperty("user.dir") + sDirSeparator + "RQCE.pdf"));
-            for(int i = 0; i < appendix2.getNumberOfPages(); i++){
+            for (int i = 0; i < appendix2.getNumberOfPages(); i++) {
                 document.addPage(appendix2.getPage(i));
             }
 
@@ -127,6 +134,7 @@ public class CertificateCreator implements Serializable{
         }
         return result;
     }
+
     //certificate creation history is required to control issued main.certificates
     public void writeLogs(String fileName, FieldData fieldData) throws IOException {
         PrintWriter out = new PrintWriter(new FileWriter(new File(System.getProperty("user.dir") + File.separator + "log" + File.separator + "logs.txt"), true));

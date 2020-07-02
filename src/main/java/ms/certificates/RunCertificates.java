@@ -20,9 +20,10 @@ course name, number of school hours and year of study period.
 The program works with English. The certificate itself is attached by the
 user to the directory structure of the program and should be called Cert.jpg.
  */
-package main.java.ms.certificates;
+package ms.certificates;
 
-import main.java.ms.certificates.view.Certificates;
+import ms.certificates.view.Certificates;
+
 import javax.swing.*;
 
 public class RunCertificates {
