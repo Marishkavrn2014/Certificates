@@ -1,5 +1,3 @@
-package test;
-
 import ms.certificates.data.FieldData;
 import org.junit.Assert;
 import org.junit.Test;
