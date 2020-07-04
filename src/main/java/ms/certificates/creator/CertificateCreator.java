@@ -11,6 +11,7 @@ import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 
 import java.io.*;
+import java.nio.file.Paths;
 import java.util.Date;
 
 public class CertificateCreator implements Serializable {
@@ -63,10 +64,13 @@ public class CertificateCreator implements Serializable {
         //open a document, set fonts, sizes, add an image and all PDF pages
         try {
             // write error log in /log/log.txt
-            System.setErr(new PrintStream(new File(System.getProperty("user.dir") + sDirSeparator + "log" + sDirSeparator + "log.txt")));
+            // TODO  почему user.dir?  какая это папка на винде?
+            final File logFile = new File(System.getProperty("user.dir") + sDirSeparator + "log" + sDirSeparator + "log.txt");
+            logFile.mkdirs();
+            System.setErr(new PrintStream(logFile));
 
             //create new PDF document
-            PDDocument document = new PDDocument();
+            final PDDocument document = new PDDocument();
 
             //set font, page size
             float POINTS_PER_INCH = 72;
@@ -117,13 +121,15 @@ public class CertificateCreator implements Serializable {
             //create a certificate name and save
             StringBuilder sb = new StringBuilder();
             String pathDocs = System.getProperty("user.dir") + sDirSeparator + "certificates" + sDirSeparator;
+            Paths.get(pathDocs).toFile().mkdirs();
             sb.append(pathDocs);
             sb.append(firstName);
             sb.append(lastName);
             sb.append(level);
             sb.append(id);
             sb.append(".pdf");
-            document.save(new File(sb.toString()));
+            final File resultFile = new File(sb.toString());
+            document.save(resultFile);
             document.close();
 
             //write logs for reporting

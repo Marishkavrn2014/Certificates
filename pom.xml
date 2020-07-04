@@ -5,20 +5,13 @@
 
     <groupId>ms</groupId>
     <artifactId>certificates</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0</version>
     <name>certificates</name>
-    <description>My project</description>
+    <description>Certificates generator</description>
 
     <properties>
         <java.version>11</java.version>
     </properties>
-    <!--	<distributionManagement>-->
-    <!--       		<repository>-->
-    <!--        		 <id>internal.repo</id>-->
-    <!--        		 <name>Internal repo</name>-->
-    <!--        		 <url>file:///home/thara/testesb/in</url>-->
-    <!--       		</repository>-->
-    <!-- 	  </distributionManagement>-->
 
     <dependencies>
 
@@ -76,6 +69,30 @@
                     <debug>true</debug>
                     <failOnError>true</failOnError>
                 </configuration>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>3.3.0</version>
+                <configuration>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
+                    <archive>
+                        <manifest>
+                            <mainClass>ms.certificates.RunCertificates</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
 
         </plugins>
