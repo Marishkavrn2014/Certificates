@@ -60,27 +60,30 @@ public class CertificateCreatorTest {
 
         String filename = "." + File.separator + firstName + lastName + level + certificateCreator.id + ".pdf";
         certificateCreator.writeLogs(filename, fieldData);
-        final File logs = new File(System.getProperty("user.dir") + File.separator + "log" + File.separator + "logs.txt");
+        final File logs = new File("." + File.separator + "log" + File.separator + "logs.txt");
         List<String> logsList = new LinkedList<>();
 
-        // TODO  проверить что файл существует и только после этого читать
-        // TODO  обернуть в try with resource
-        FileReader fr = new FileReader(logs);
-        BufferedReader bf = new BufferedReader(fr);
-        String line;
-        while ((line = bf.readLine()) != null) {
-            logsList.add(line);
+        if(logs.canRead()) {
+            try (BufferedReader bf = new BufferedReader(new FileReader(logs))) {
+                String line;
+                while ((line = bf.readLine()) != null) {
+                    logsList.add(line);
+                }
+            }
         }
         boolean resultFileName = false;
         boolean resultRow = false;
         String expRow = certificateCreator.id + " FirstName: " + firstName + " Last Name: " + lastName +
                 " Level: " + level + " course Name: " + courseName + " From - to: " + from + " - " + to;
-        for (String s : logsList) {
-            if (s.contains(filename)) {
-                resultFileName = true;
-            }
-            if (s.contains(expRow)) {
-                resultRow = true;
+
+        if(!logsList.isEmpty()) {
+            for (String s : logsList) {
+                if (s.contains(filename)) {
+                    resultFileName = true;
+                }
+                if (s.contains(expRow)) {
+                    resultRow = true;
+                }
             }
         }
         Assert.assertTrue(resultFileName && resultRow);

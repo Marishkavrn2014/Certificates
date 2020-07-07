@@ -10,6 +10,7 @@ import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 
+import javax.swing.*;
 import java.io.*;
 import java.nio.file.Paths;
 import java.util.Date;
@@ -64,9 +65,10 @@ public class CertificateCreator implements Serializable {
         //open a document, set fonts, sizes, add an image and all PDF pages
         try {
             // write error log in /log/log.txt
-            // TODO  почему user.dir?  какая это папка на винде?
-            final File logFile = new File(System.getProperty("user.dir") + sDirSeparator + "log" + sDirSeparator + "log.txt");
-            logFile.mkdirs();
+            final File logFile = new File("." + sDirSeparator + "log" + sDirSeparator + "log.txt");
+            if(!logFile.exists()) {
+                Paths.get(logFile.getParent()).toFile().mkdirs();
+            }
             System.setErr(new PrintStream(logFile));
 
             //create new PDF document
@@ -81,7 +83,11 @@ public class CertificateCreator implements Serializable {
             PDPageContentStream contentStream = new PDPageContentStream(document, page);
 
             //create image path and convert image to PDF
-            String path = System.getProperty("user.dir") + sDirSeparator + "Cert.jpg";
+            String path = "." + sDirSeparator + "Cert.jpg";
+            File image =new File(path);
+            if(!image.exists()) {
+                JOptionPane.showMessageDialog(null, "Certificate file not found! Please add the file \"Cert.jpg\" to the current directory.", "ERROR", JOptionPane.ERROR_MESSAGE);
+            }
             addImageToPage(document, 25, -10, path, contentStream);
 
             //write all the text in the certificate
@@ -109,18 +115,26 @@ public class CertificateCreator implements Serializable {
             contentStream.close();
 
             //add part of certificate
-            PDDocument appendix1 = PDDocument.load(new File(System.getProperty("user.dir") + sDirSeparator + "RQCR.pdf"));
+            File appFile1 = new File("." + sDirSeparator + "RQCR.pdf");
+            if(!image.exists()) {
+                JOptionPane.showMessageDialog(null, "file with attachment to certificate not found! Please add the file \"RQCR.pdf\" to the current directory.", "ERROR", JOptionPane.ERROR_MESSAGE);
+            }
+            PDDocument appendix1 = PDDocument.load(appFile1);
             for (int i = 0; i < appendix1.getNumberOfPages(); i++) {
                 document.addPage(appendix1.getPage(i));
             }
-            PDDocument appendix2 = PDDocument.load(new File(System.getProperty("user.dir") + sDirSeparator + "RQCE.pdf"));
+            File appFile2 = new File("." + sDirSeparator + "RQCE.pdf");
+            if(!image.exists()) {
+                JOptionPane.showMessageDialog(null, "file with attachment to certificate not found! Please add the file \"RQCE.pdf\" to the current directory.", "ERROR", JOptionPane.ERROR_MESSAGE);
+            }
+            PDDocument appendix2 = PDDocument.load(appFile2);
             for (int i = 0; i < appendix2.getNumberOfPages(); i++) {
                 document.addPage(appendix2.getPage(i));
             }
 
             //create a certificate name and save
             StringBuilder sb = new StringBuilder();
-            String pathDocs = System.getProperty("user.dir") + sDirSeparator + "certificates" + sDirSeparator;
+            String pathDocs = "." + sDirSeparator + "certificates" + sDirSeparator;
             Paths.get(pathDocs).toFile().mkdirs();
             sb.append(pathDocs);
             sb.append(firstName);
@@ -142,32 +156,36 @@ public class CertificateCreator implements Serializable {
     }
 
     //certificate creation history is required to control issued main.certificates
-    public void writeLogs(String fileName, FieldData fieldData) throws IOException {
-        PrintWriter out = new PrintWriter(new FileWriter(new File(System.getProperty("user.dir") + File.separator + "log" + File.separator + "logs.txt"), true));
-        Date date = new Date();
-        out.write("\n" + fileName + " \n");
-        StringBuilder sb = new StringBuilder();
-        sb.append(id).append(" ");
-        sb.append("FirstName: ");
-        sb.append(fieldData.getFirstName());
-        sb.append(" ");
-        sb.append("Last Name: ");
-        sb.append(fieldData.getLastName());
-        sb.append(" ");
-        sb.append("Level: ");
-        sb.append(fieldData.getLevel());
-        sb.append(" ");
-        sb.append("course Name: ");
-        sb.append(fieldData.getCourseName());
-        sb.append(" ");
-        sb.append("From - to: ");
-        sb.append(fieldData.getFrom());
-        sb.append(" - ");
-        sb.append(fieldData.getTo());
-        sb.append("\n");
-        sb.append(date);
-        out.write(sb.toString());
-        out.close();
+    public void writeLogs(String fileName, FieldData fieldData){
+        try(PrintWriter out = new PrintWriter(new FileWriter(
+                new File("." + File.separator + "log" + File.separator + "logs.txt"), true))) {
+            Date date = new Date();
+            out.write("\n" + fileName + " \n");
+            StringBuilder sb = new StringBuilder();
+            sb.append(id).append(" ");
+            sb.append("FirstName: ");
+            sb.append(fieldData.getFirstName());
+            sb.append(" ");
+            sb.append("Last Name: ");
+            sb.append(fieldData.getLastName());
+            sb.append(" ");
+            sb.append("Level: ");
+            sb.append(fieldData.getLevel());
+            sb.append(" ");
+            sb.append("course Name: ");
+            sb.append(fieldData.getCourseName());
+            sb.append(" ");
+            sb.append("From - to: ");
+            sb.append(fieldData.getFrom());
+            sb.append(" - ");
+            sb.append(fieldData.getTo());
+            sb.append("\n");
+            sb.append(date);
+            out.write(sb.toString());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
 }

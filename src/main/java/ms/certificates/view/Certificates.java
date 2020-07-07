@@ -34,6 +34,7 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.*;
+import java.nio.file.Paths;
 
 //create UI
 public class Certificates extends JFrame {
@@ -69,7 +70,7 @@ public class Certificates extends JFrame {
             public void mouseClicked(MouseEvent e) {
                 //create InputStream for synchronising id of certificate
                 CertificateCreator certificateCreator = new CertificateCreator();
-                final File previous = new File(System.getProperty("user.dir") + File.separator + "log" + File.separator + "Creator.out");
+                final File previous = new File("." + File.separator + "log" + File.separator + "Creator.out");
                 if (previous.exists()) {
                     try (final ObjectInputStream in = new ObjectInputStream(
                             new FileInputStream(previous))) {
@@ -111,8 +112,9 @@ public class Certificates extends JFrame {
 
                     // create a document, check that the method return true
                     if (certificateCreator.createDoc(fieldData)) {
+                        Paths.get("." + File.separator + "log").toFile().mkdirs();
                         try (final ObjectOutputStream o = new ObjectOutputStream(
-                                new FileOutputStream(System.getProperty("user.dir") + File.separator + "log" + File.separator + "Creator.out"))) {
+                                new FileOutputStream("." + File.separator + "log" + File.separator + "Creator.out"))) {
 
                             //show confirmation window
                             SuccessfulWindow sw = new SuccessfulWindow();
